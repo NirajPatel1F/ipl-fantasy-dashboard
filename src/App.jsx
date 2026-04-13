@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Calendar, Zap, Activity, Settings, RefreshCw, Database, AlertCircle, Link
 } from 'lucide-react';
 
-const API_BASE_URL = 'http://34.123.229.223/api';
+const API_BASE_URL = 'https://34.123.229.223.nip.io/api';
 
 const App = () => {
   const [teams, setTeams] = useState([]);
