@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Users, TrendingUp, X, ChevronDown, ChevronUp, Search, 
-  LayoutDashboard, Calendar, Zap, Activity, Settings, RefreshCw, Database, AlertCircle, Link
+  LayoutDashboard, Calendar, Zap, Activity, Settings, RefreshCw, Database, AlertCircle, Link,
+  BookOpen, Shield, Target, Award, Crosshair
 } from 'lucide-react';
 
 const API_BASE_URL = 'https://34.123.229.223.nip.io/api';
 
 const App = () => {
+  const [currentView, setCurrentView] = useState('dashboard');
   const [teams, setTeams] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -130,7 +132,7 @@ const App = () => {
       {/* HEADER */}
       <header className="bg-slate-900 text-white shadow-lg sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-inner">
                 <Activity className="w-8 h-8 text-white" />
@@ -145,8 +147,24 @@ const App = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="relative">
+            {/* TAB NAVIGATION */}
+            <div className="flex overflow-x-auto items-center gap-2 bg-slate-800 p-1.5 rounded-xl border border-slate-700 w-full lg:w-auto shrink-0">
+              <button 
+                onClick={() => setCurrentView('dashboard')}
+                className={`px-5 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap flex-1 lg:flex-none ${currentView === 'dashboard' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+              >
+                <LayoutDashboard className="w-4 h-4" /> Dashboard
+              </button>
+              <button 
+                onClick={() => setCurrentView('rules')}
+                className={`px-5 py-2 rounded-lg text-sm font-bold transition-all flex items-center justify-center gap-2 whitespace-nowrap flex-1 lg:flex-none ${currentView === 'rules' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-white hover:bg-slate-700'}`}
+              >
+                <BookOpen className="w-4 h-4" /> Rule Engine
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3 w-full lg:w-auto">
+              <div className="relative w-full">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
                 <input 
                   type="text" 
@@ -168,7 +186,7 @@ const App = () => {
       </header>
 
       {/* WEB SCRAPER SETTINGS PANEL */}
-      {showSettings && (
+      {showSettings && currentView === 'dashboard' && (
         <div className="bg-slate-800 border-b border-slate-700 text-white shadow-inner animate-in slide-in-from-top-4">
           <div className="max-w-6xl mx-auto px-4 py-6">
             <div className="flex flex-col md:flex-row items-end gap-4">
@@ -208,9 +226,116 @@ const App = () => {
         </div>
       )}
 
-      {/* DASHBOARD */}
+      {/* DASHBOARD OR RULES VIEW */}
       <main className="max-w-6xl mx-auto px-4 py-8">
-        {teams.length === 0 ? (
+        {currentView === 'rules' ? (
+          <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="text-center mb-10">
+              <h2 className="text-4xl font-black text-slate-800 tracking-tight">Engine Scoring Rules</h2>
+              <p className="text-slate-500 mt-2 font-medium">The official T20 fantasy points calculation system synced directly with the .NET Backend.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* BATTING CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-blue-50 rounded-xl text-blue-600"><Target className="w-6 h-6" /></div>
+                   <h3 className="text-xl font-black text-slate-800">Batting Points</h3>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Run</span> <span className="font-bold text-slate-800">+1</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Boundary Bonus</span> <span className="font-bold text-slate-800">+1</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Six Bonus</span> <span className="font-bold text-slate-800">+2</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Half-Century Bonus</span> <span className="font-bold text-slate-800">+8</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Century Bonus</span> <span className="font-bold text-slate-800">+16</span></div>
+                   <div className="flex justify-between items-center text-red-500"><span className="text-red-400">Dismissal for Duck (0 Runs)</span> <span className="font-bold">-2</span></div>
+                 </div>
+              </div>
+
+              {/* BOWLING CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-purple-50 rounded-xl text-purple-600"><Crosshair className="w-6 h-6" /></div>
+                   <h3 className="text-xl font-black text-slate-800">Bowling Points</h3>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Wicket (Excl. Run Out)</span> <span className="font-bold text-slate-800">+25</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">LBW / Bowled Bonus</span> <span className="font-bold text-slate-800">+8</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">3 Wicket Bonus</span> <span className="font-bold text-slate-800">+4</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">4 Wicket Bonus</span> <span className="font-bold text-slate-800">+8</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">5 Wicket Bonus</span> <span className="font-bold text-slate-800">+16</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Maiden Over</span> <span className="font-bold text-slate-800">+12</span></div>
+                 </div>
+              </div>
+
+              {/* FIELDING CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-emerald-50 rounded-xl text-emerald-600"><Shield className="w-6 h-6" /></div>
+                   <h3 className="text-xl font-black text-slate-800">Fielding Points</h3>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Catch</span> <span className="font-bold text-slate-800">+8</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">3 Catch Bonus</span> <span className="font-bold text-slate-800">+4</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Stumping</span> <span className="font-bold text-slate-800">+12</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Run Out</span> <span className="font-bold text-slate-800">+12</span></div>
+                 </div>
+              </div>
+
+              {/* MULTIPLIERS CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-amber-50 rounded-xl text-amber-600"><Award className="w-6 h-6" /></div>
+                   <h3 className="text-xl font-black text-slate-800">Multipliers</h3>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Captain (C)</span> <span className="font-bold text-slate-800 text-lg">2x</span></div>
+                   <div className="flex justify-between items-center"><span className="text-slate-500">Vice-Captain (VC)</span> <span className="font-bold text-slate-800 text-lg">1.5x</span></div>
+                   <p className="text-[11px] text-slate-400 mt-4 leading-relaxed bg-slate-50 p-3 rounded-lg border border-slate-200">Multipliers are applied to the player's total combined points (including all base points, strike rate, economy rate, and fielding bonuses).</p>
+                 </div>
+              </div>
+
+              {/* STRIKE RATE CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 md:col-span-2 lg:col-span-1">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-rose-50 rounded-xl text-rose-600"><Zap className="w-6 h-6" /></div>
+                   <div>
+                     <h3 className="text-xl font-black text-slate-800">Strike Rate</h3>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Min 10 Balls Played</p>
+                   </div>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Above 170 runs per 100 balls</span> <span className="font-bold">+6</span></div>
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Between 150.01 and 170</span> <span className="font-bold">+4</span></div>
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Between 130 and 150</span> <span className="font-bold">+2</span></div>
+                   <div className="flex justify-between items-center text-red-500 pt-2 border-t border-slate-100"><span className="text-red-400">Between 60 and 70</span> <span className="font-bold">-2</span></div>
+                   <div className="flex justify-between items-center text-red-500"><span className="text-red-400">Between 50 and 59.99</span> <span className="font-bold">-4</span></div>
+                   <div className="flex justify-between items-center text-red-500"><span className="text-red-400">Below 50 runs per 100 balls</span> <span className="font-bold">-6</span></div>
+                 </div>
+              </div>
+
+              {/* ECONOMY RATE CARD */}
+              <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 md:col-span-2 lg:col-span-1">
+                 <div className="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                   <div className="p-2.5 bg-indigo-50 rounded-xl text-indigo-600"><Activity className="w-6 h-6" /></div>
+                   <div>
+                     <h3 className="text-xl font-black text-slate-800">Economy Rate</h3>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Min 2 Overs Bowled</p>
+                   </div>
+                 </div>
+                 <div className="space-y-3 text-sm font-medium text-slate-600">
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Below 5 runs per over</span> <span className="font-bold">+6</span></div>
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Between 5 and 5.99</span> <span className="font-bold">+4</span></div>
+                   <div className="flex justify-between items-center text-emerald-600"><span className="text-emerald-500">Between 6 and 7</span> <span className="font-bold">+2</span></div>
+                   <div className="flex justify-between items-center text-red-500 pt-2 border-t border-slate-100"><span className="text-red-400">Between 10 and 11</span> <span className="font-bold">-2</span></div>
+                   <div className="flex justify-between items-center text-red-500"><span className="text-red-400">Between 11.01 and 12</span> <span className="font-bold">-4</span></div>
+                   <div className="flex justify-between items-center text-red-500"><span className="text-red-400">Above 12 runs per over</span> <span className="font-bold">-6</span></div>
+                 </div>
+              </div>
+
+            </div>
+          </div>
+        ) : teams.length === 0 ? (
            <div className="text-center py-20 bg-white rounded-3xl shadow-sm border border-slate-200">
              <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-indigo-600 border-solid mx-auto mb-4"></div>
              <p className="text-slate-600 font-medium">Booting connection to SQLite Database...</p>
